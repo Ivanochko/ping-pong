@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
@@ -45,11 +46,17 @@ public class PingService {
         log.info("{} Pong server is on url: {}", PREFIX, pongUrl);
 
         var url = pongUrl + PING_ENDPOINT + '1';
-        ResponseEntity<String> response = restTemplate.getForEntity(
-                url, String.class
-        );
-        if (Objects.equals(response.getBody(), "PONG")) {
-            log.info("{} Pong server connected!", PREFIX);
+        ResponseEntity<String> response = null;
+        try {
+            response = restTemplate.getForEntity(
+                    url, String.class
+            );
+            if (Objects.equals(response.getBody(), "PONG")) {
+                log.info("{} Pong server connected!", PREFIX);
+            }
+        }catch (RestClientException e){
+            log.info("{} Pong server is not connected!", PREFIX);
         }
+
     }
 }
