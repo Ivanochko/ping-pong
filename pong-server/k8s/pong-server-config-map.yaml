@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: urls-config
-data:
-  ACCESS_KEY: "AKIASW2DUYZVVPXRIDFC"
-  SECRET_KEY: "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"
-  URL: "https://sqs.us-east-1.amazonaws.com/186436077163/PingPongQueue"
