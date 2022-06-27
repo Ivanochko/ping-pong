@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ping-client
+  labels:
+    tier: ping-client
+    app: ping-pong
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: ping-client
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        tier: ping-client
+    spec:
+      containers:
+        - name: ping-client
+          image: ivanochko/ping-client:latest
+          envFrom:
+            - configMapRef:
+                name: urls-config
+          env:
+            - name: SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: p-p-secret
+                  key: secret
+          readinessProbe:
+              httpGet:
+                path: /actuator/health
+                port: 8081
+              initialDelaySeconds: 5
+              periodSeconds: 3
+          ports:
+            - containerPort: 8081
+              protocol: TCP
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+            requests:
+              memory: "128Mi"
+              cpu: "50m"

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pong-server
+  labels:
+    tier: pong-server
+    app: ping-pong
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: pong-server
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        tier: pong-server
+    spec:
+      containers:
+        - name: pong-server
+          image: ivanochko/pong-server:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: urls-config
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 3
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+            requests:
+              memory: "128Mi"
+              cpu: "50m"

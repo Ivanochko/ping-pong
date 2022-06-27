@@ -54,9 +54,8 @@ public class PingService {
             if (Objects.equals(response.getBody(), "PONG")) {
                 log.info("{} Pong server connected!", PREFIX);
             }
-        }catch (RestClientException e){
+        } catch (RestClientException e) {
             log.info("{} Pong server is not connected!", PREFIX);
         }
-
     }
 }
